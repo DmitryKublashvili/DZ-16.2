@@ -11,7 +11,6 @@ namespace DZ_16._2
         public int startPoint;
         public int endPoint;
 
-        public Points(int startPoint, int endPoint) =>
-            (this.startPoint, this.endPoint) = (startPoint, endPoint);
+        public Points(int startPoint, int endPoint) => (this.startPoint, this.endPoint) = (startPoint, endPoint);
     }
 }
