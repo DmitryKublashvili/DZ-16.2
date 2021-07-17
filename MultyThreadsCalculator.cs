@@ -25,16 +25,26 @@ namespace DZ_16._2
         /// </summary>
         private int FinishPoint { get; set; }
 
-        public TimeSpan RunningTime { get; set; }
-
+        /// <summary>
+        /// Нижняя граница диапазона
+        /// </summary>
         private int LowLimit { get; set; }
 
+        /// <summary>
+        /// Верхняя граница диапазона
+        /// </summary>
         private int HiLimit { get; set; }
 
         public bool IsCalculationFinished { get; set; }
 
-        public object o = new object();
+        // объект, используемый для блокировки разделяемых ресурсов
+        public object objectToLock; 
 
+        /// <summary>
+        /// Конструктор
+        /// </summary>
+        /// <param name="lowLimit"></param>
+        /// <param name="hiLimit"></param>
         public MultyThreadsCalculator(int lowLimit, int hiLimit)
         {
             LowLimit = lowLimit;
@@ -42,37 +52,15 @@ namespace DZ_16._2
             Result = 0;
             StartPoint = LowLimit;
             IsCalculationFinished = false;
+            objectToLock = new object();
         }
 
-        private Points GetPoints()
-        {
-            lock (o)
-            {
-                FinishPoint = (HiLimit - 100_000_000) > StartPoint ? (StartPoint + 99_999_999) : HiLimit;
-
-                Points points = new Points(StartPoint, FinishPoint);
-
-                // устанавливаем значение стартового числа для следующего потока
-                StartPoint = FinishPoint + 1;
-
-                return points;
-            }
-        }
-
-        public void CallThreadPool()
-        {
-            while (!IsCalculationFinished)
-            {
-                ThreadPool.QueueUserWorkItem(new WaitCallback(ThreadCalculate));
-                Thread.Sleep(200);
-            }
-        }
-
+        /// <summary>
+        /// Производит вычисление количества чисел, сумма цифр которых кратна последней цифре в многопоточном режиме
+        /// </summary>
         public void Calculate()
         {
             Task task = new Task(CallThreadPool);
-
-            //int num = (int)Task.CurrentId;
 
             Stopwatch stopwatch = new Stopwatch();
 
@@ -91,9 +79,24 @@ namespace DZ_16._2
             Console.ResetColor();
         }
 
-        public void ThreadCalculate(Object o)
+        /// <summary>
+        /// Вызывает пулл потоков 
+        /// </summary>
+        private void CallThreadPool()
         {
+            while (!IsCalculationFinished)
+            {
+                ThreadPool.QueueUserWorkItem(new WaitCallback(ThreadCalculation));
+                Thread.Sleep(200);
+            }
+        }
 
+        /// <summary>
+        /// Выполняет вычисления для отдельного потока
+        /// </summary>
+        /// <param name="o"></param>
+        private void ThreadCalculation(Object o)
+        {
             Stopwatch stopwatch = new Stopwatch();
             stopwatch.Start();
 
@@ -136,7 +139,8 @@ namespace DZ_16._2
                 }
             }
 
-            Console.WriteLine($"\nПоток {Thread.CurrentThread.ManagedThreadId} завершил вычисления. \nКоличество чисел (в диапазоне): {ownThreadResult}, время выполнения: {stopwatch.Elapsed}");
+            Console.WriteLine($"\nПоток {Thread.CurrentThread.ManagedThreadId} завершил вычисления. " +
+                $"\nКоличество чисел (в диапазоне): {ownThreadResult}, время выполнения: {stopwatch.Elapsed}");
 
             // установление факта завершения вычислений
             if (points.endPoint >= HiLimit)
@@ -146,11 +150,31 @@ namespace DZ_16._2
         }
 
         /// <summary>
+        /// Возващает точки (числа) в пределах которых поток производит вычисления
+        /// </summary>
+        /// <returns></returns>
+        private Points GetPoints()
+        {
+            lock (objectToLock)
+            {
+                FinishPoint = (HiLimit - 100_000_000) > StartPoint ? (StartPoint + 99_999_999) : HiLimit;
+
+                Points points = new Points(StartPoint, FinishPoint);
+
+                // устанавливаем значение стартового числа для следующего потока
+                StartPoint = FinishPoint + 1;
+
+                return points;
+            }
+        }
+
+        /// <summary>
         /// Добавляет к результату единицу
         /// </summary>
         private void AddResult()
         {
-            lock (o)
+            // блокировка разделяемого ресурса
+            lock (objectToLock)
             {
                 Result++;
             }

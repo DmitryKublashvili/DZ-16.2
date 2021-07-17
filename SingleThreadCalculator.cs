@@ -12,6 +12,11 @@ namespace DZ_16._2
     {
         public static int SinglThreadResult { get; private set; }
 
+        /// <summary>
+        /// Производит вычисление количества чисел, сумма цифр которых кратна последней цифре в однопоточном режиме в указанном диапазоне
+        /// </summary>
+        /// <param name="startPoint"></param>
+        /// <param name="endPoint"></param>
         public static void SingleThreadCalculate(int startPoint, int endPoint)
         {
             Console.WriteLine($"Поток {Thread.CurrentThread.ManagedThreadId} приступил к вычислениям. Диапазон: {startPoint} - {endPoint}");
@@ -42,8 +47,5 @@ namespace DZ_16._2
                 $"Количество чисел: {SinglThreadResult}, время выполнения: {stopwatch.Elapsed}");
             Console.ResetColor();
         }
-
-
-
     }
 }
