@@ -3,20 +3,14 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace DZ_16._2
 {
-    class SingleThreadCalculator
+    class SingleTaskForMultiThreadCalculation
     {
         public int Result { get; private set; }
 
-        /// <summary>
-        /// Сalculates the number of numbers whose sum of digits is a multiple of the last digit in a given interval
-        /// </summary>
-        /// <param name="startPoint"></param>
-        /// <param name="endPoint"></param>
         public void Calculate(int startPoint, int endPoint)
         {
             Stopwatch stopwatch = new Stopwatch();
@@ -81,10 +75,10 @@ namespace DZ_16._2
                     }
                     // уменьшаем сумму цифр по отношению к предыдущей
                     sum -= (coefficient * 9 - 1);
-                }
 
+                }
                 //проверяем суммы цифр на делимость
-                ++result;   // деление на 1 (всегда кратно)
+                ++result;   // деление на 1
                 if (sum % 2 == 0) ++result;
                 if (sum % 3 == 0) ++result;
                 if (sum % 4 == 0) ++result;
@@ -95,8 +89,8 @@ namespace DZ_16._2
                 if (sum % 9 == 0) ++result;
             }
             stopwatch.Stop();
-            // если последняя цифра последнего числа равна 0 (то есть 1 она уже не станет), то вычитаем 1 так как мы ранее добавили 1 применительно ко всем числам 
-            Result = endPoint % 10 == 0 ? result - 1 : result;
+
+            Result = result;
         }
     }
 }

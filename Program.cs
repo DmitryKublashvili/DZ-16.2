@@ -13,18 +13,31 @@ namespace DZ_16._2
     {
         static void Main(string[] args)
         {
-            /////////////////////   Многопоточный режим \\\\\\\\\\\\\\\\\\\\\\\\\\
-            Console.WriteLine("Производятся вычисления в многопоточном режиме");
+            //////////////////// Multi-threaded calculations \\\\\\\\\\\\\\\\\\\\
 
-            MultyThreadsCalculator calculator = new MultyThreadsCalculator(1_000_000_000, 2_000_000_000);
+            Console.WriteLine("Multi-threaded calculations...\n");
 
-            calculator.Calculate();
+            new MultyThreadsCalculator().Calculate(1_000_000_000, 2_000_000_000);
 
-            /////////////////////   Однопоточный режим \\\\\\\\\\\\\\\\\\\\\\\\\\
 
-            Console.WriteLine("Производятся вычисления в однопоточном режиме");
+            //////////////////// Single-thread calculations \\\\\\\\\\\\\\\\\\\\
 
-            SingleThreadCalculate(1_000_000_000, 2_000_000_000);
+            Console.WriteLine("Single-threaded calculations...\n");
+
+            Stopwatch stopwatch = new Stopwatch();
+            stopwatch.Start();
+
+            var singleThreadCalculator = new SingleThreadCalculator();
+
+            singleThreadCalculator.Calculate(1_000_000_000, 2_000_000_000);
+
+            stopwatch.Stop();
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.WriteLine($"Result in single-thread mode {String.Format("{0:### ### ###}", singleThreadCalculator.Result)}, " +
+                $"time {stopwatch.ElapsedMilliseconds} milliseconds\n");
+            Console.ResetColor();
+
+            Console.WriteLine("Calculations complete\n");
 
             Console.ReadKey();
         }
