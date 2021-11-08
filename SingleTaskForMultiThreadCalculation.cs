@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace DZ_16._2
@@ -13,8 +14,8 @@ namespace DZ_16._2
 
         public void Calculate(int startPoint, int endPoint)
         {
-            Stopwatch stopwatch = new Stopwatch();
-            stopwatch.Start();
+            //Stopwatch stopwatch = new Stopwatch();
+            //stopwatch.Start();
 
             // последние цифры чисел можно не суммировать, так как если сумма предыдущих будет кратна последней цифре
             // то и данная сумма, увеличенная на эту цифру всегда буде кратная данной цифре 
@@ -88,7 +89,7 @@ namespace DZ_16._2
                 if (sum % 8 == 0) ++result;
                 if (sum % 9 == 0) ++result;
             }
-            stopwatch.Stop();
+            //stopwatch.Stop();
 
             Result = result;
         }

@@ -15,7 +15,7 @@ namespace DZ_16._2
         /// <summary>
         /// Number of threads
         /// </summary>
-        public int ThreadsNum { get; set; } = 10;
+        private int ThreadsNum { get; set; } = 10;
 
         /// <summary>
         /// Calculates the number of numbers whose sum of digits is a multiple of the last digit in multithreaded mode
@@ -52,13 +52,20 @@ namespace DZ_16._2
 
             Func<int> func = () => currentEndNum += interval;
 
+            List<Task> tasks = new List<Task>();
+
             foreach (var item in tasksList)
             {
-                Task.Run(() => item.Calculate(currentEndNum, func()));
-                Thread.Sleep(10);
+                var task = Task.Run(() => item.Calculate(currentEndNum, func()));
+
+                tasks.Add(task);
+
+                Thread.Sleep(2);
             }
 
-            Thread.Sleep(666);
+            Task.WaitAll(tasks.ToArray());
+
+            //Thread.Sleep(500);
 
             // FinalResult = intervalsList.Select(x => x.Result).Aggregate((x, y) => x + y);  // применение linq негативно сказалось на скорости вычислений
             // и снизило стабильность, поэтому для суммирования результатов всех потоков используем простой цикл:
